@@ -5,7 +5,8 @@ const bodyParser = require("body-parser");
 require('dotenv').config();
 
 const indexRouter = require('./routes/index');
-const usersRouter = require('./routes/users');
+const usersRouter = require("./routes/users");
+const shopsRouter = require("./routes/shops");
 
 const app = express();
 
@@ -23,6 +24,7 @@ app.use(function(req, res, next) {
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use("/shops", shopsRouter);
 
 app.use(function(req, res, next) {
     const err = new Error('Not Found');

@@ -1,5 +1,6 @@
-const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
+const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
+const PointSchema = require("./PointSchema");
 
 const Schema = mongoose.Schema;
 
@@ -11,15 +12,31 @@ const UserSchema = new Schema({
         required: true,
     },
     email: {
-        type: String,
+        type: mongoose.Schema.Types.String,
         trim: true,
-        required: true
+        required: true,
+        unique: true
     },
     password: {
         type: String,
         trim: true,
         required: true
-    }
+    },
+    location: {
+        type: PointSchema,
+        trim: true,
+        required: true,
+        default: { type: 'Point', coordinates: [-104.9903, 39.7392] }
+    },
+    shops: [{
+        liked: Boolean,
+        disliked: Boolean,
+        DateOfAction: Date,
+        shops: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Shops"
+        }
+    }]
 });
 
 UserSchema.pre('save', function(next){
