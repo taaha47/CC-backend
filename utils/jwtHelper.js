@@ -12,15 +12,18 @@ function JWTHelper() {
     };
 
     this.checkToken = function (req, res, next) {
-        const token = req.headers["authorization"];
+        const token = req.get("authorization");
         if(token) {
-            jwt.verify(token, process.env.SECRET, (err, decoded) => {
+            jwt.verify(token, process.env.SECRET, function (err, decoded) {
                 if(err)
-                    return res.status(401).json({});
-                next();
+                    res.status(401).json({});
+                else {
+                  next();
+                }
             });
+        } else {
+          return res.status(403).json({});
         }
-        return res.status(403).json({});
     };
 }
 

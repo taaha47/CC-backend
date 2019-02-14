@@ -14,7 +14,7 @@ router.get("/all", jwtHelper.checkToken, (req, res) => {
                 shops: shops
             });
         })
-        .catch((err) => {return res.status(500).json({});})
+        .catch((err) => {return res.status(500).json({})});
 });
 
 router.post("/new", jwtHelper.checkToken, (req, res) => {
