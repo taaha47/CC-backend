@@ -18,6 +18,7 @@ function JWTHelper() {
                 if(err)
                     res.status(401).json({});
                 else {
+                  req.user = decoded;
                   next();
                 }
             });
