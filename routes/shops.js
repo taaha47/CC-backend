@@ -9,24 +9,40 @@ const distanceCalculator = require("gps-distance");
 const jwtHelper = new JWTHelper();
 
 router.get("/all", jwtHelper.checkToken, (req, res) => {
-    Promise.all([User.findOne({_id: req.user._id}).exec(), Shop.find({}).exec()])
+    Promise.all([User.findById(req.user.id).populate("shops.shop").exec(), Shop.find({}).exec()])
       .then((result) => {
         const user = result[0];
-        let shops = result[1];
-        shops = shops.filter((item) => !user.shops.includes(item))
+        const shops = result[1];
+        result = shops.filter((item) => !user.shops.map((shop) => shop.shop.id).includes(item.id))
           .sort((a, b) => distanceCalculator(...a.location.coordinates, ...user.location.coordinates) -
               distanceCalculator(...b.location.coordinates, ...user.location.coordinates)
           );
         return res.status(200).json({
-          shops: shops
+          shops: result
         });
       })
-      .catch((err) => {throw Error("error fetching shops List")});
+      .catch((err) => res.status(500).json({error: err.message}));
+});
+
+router.post("/like-shop", jwtHelper.checkToken, (req, res) => {
+    const {shopId} = req.body;
+    if (!shopId)
+        return res.status(400).json({});
+    Promise.all([User.findOneAndUpdate({id: req.user.id}).exec(), Shop.findById(shopId).exec()])
+      .then((result) => {
+          let user = result[0];
+          const shop = result[1];
+          const likedShop =  {liked: true, disliked: false, DateOfAction: new Date(), shop: shop._id};
+          user.shops.push(likedShop);
+          user.save()
+            .then((success) => {return res.status(202).json({})})
+            .catch((error) => {return res.status(500).json({error: "an error has occurred while saving action to database"})});
+      })
+      .catch((error) => {return res.status(500).json({error: error})});
 });
 
 router.post("/new", jwtHelper.checkToken, (req, res) => {
     const shop = new Shop({
-        _id: new mongoose.Types.ObjectId(),
         name: req.body.name,
         owner: req.body.owner,
         description: req.body.description,

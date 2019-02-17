@@ -8,21 +8,27 @@ const JWTHelper = require("../utils/jwtHelper");
 const jwtHelper = new JWTHelper();
 
 router.post("/register", (req, res) => {
-    const user = new User({
-      _id: new mongoose.Types.ObjectId(),
-      name: req.body.name,
-      email: req.body.email,
-      password: req.body.password
-    });
-    user.save().then(() => {
-      res.status(201).json({
-        success: "new User has been created"
-      });
-    }).catch(() => {
-      res.status(500).json({
-        error: "Technical error"
-      });
-    });
+    const user = User.findOne({email: req.body.email}).exec()
+      .then((result) => {
+        if (!result) {
+          const user = new User({
+            name: req.body.name,
+            email: req.body.email,
+            password: req.body.password
+          });
+          user.save().then(() => {
+            res.status(201).json({
+              success: "new User has been created"
+            });
+          }).catch(() => {
+            res.status(500).json({
+              error: "Technical error"
+            });
+          });
+        } else {
+          return res.status(400).json({err: "user already exists"});
+        }
+      })
 });
 
 router.post("/login", (req, res) => {
@@ -38,7 +44,7 @@ router.post("/login", (req, res) => {
           if(result) {
             const jwtToken = jwtHelper.generateJwt({
               email: user.email,
-              _id: user._id
+              id: user.id
             });
             return res.status(200).json({
               token: jwtToken

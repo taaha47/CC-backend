@@ -5,7 +5,6 @@ const PointSchema = require("./PointSchema");
 const Schema = mongoose.Schema;
 
 const UserSchema = new Schema({
-    _id: mongoose.Schema.Types.ObjectId,
     name: {
         type: String,
         trim: true,
@@ -32,7 +31,7 @@ const UserSchema = new Schema({
         liked: Boolean,
         disliked: Boolean,
         DateOfAction: Date,
-        shops: {
+        shop: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Shops"
         }

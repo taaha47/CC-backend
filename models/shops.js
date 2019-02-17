@@ -4,7 +4,6 @@ const PointSchema = require("./PointSchema");
 const Schema = mongoose.Schema;
 
 const ShopsSchema = new Schema({
-    _id: mongoose.Schema.Types.ObjectId,
     name: {
         type: String,
         trim: true,
