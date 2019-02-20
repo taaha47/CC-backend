@@ -27,6 +27,14 @@ const ShopsSchema = new Schema({
     }
 });
 
+ShopsSchema.set('toJSON', {
+  transform: (doc, ret) => {
+    ret.id = ret._id.toHexString();
+    delete ret._id;
+    delete ret.__v;
+  }
+});
+
 const Shops = mongoose.model('Shops', ShopsSchema);
 
 module.exports = Shops;
