@@ -39,7 +39,11 @@ const UserSchema = new Schema({
 });
 
 UserSchema.pre('save', function(next){
-    this.password = bcrypt.hashSync(this.password, 10);
+    if (!this.isModified('password'))
+      return next();
+
+    const salt = bcrypt.genSaltSync(10);
+    this.password = bcrypt.hashSync(this.password, salt);
     next();
 });
 

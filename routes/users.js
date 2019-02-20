@@ -37,8 +37,8 @@ router.post("/login", (req, res) => {
       .then((user) => {
         bcrypt.compare(req.body.password, user.password, (err, result) => {
           if(err) {
-            return res.status(401).json({
-              failed: "Unauthorized Access"
+            return res.status(500).json({
+              failed: "Technical Error"
             });
           }
           if(result) {

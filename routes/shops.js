@@ -49,7 +49,7 @@ router.post("/like-shop", jwtHelper.checkToken, (req, res) => {
     const {shopId} = req.body;
     if (!shopId)
         return res.status(400).json({});
-    Promise.all([User.findOneAndUpdate({id: req.user.id}).exec(), Shop.findById(shopId).exec()])
+    Promise.all([User.findByIdAndUpdate(req.user.id).exec(), Shop.findById(shopId).exec()])
       .then((result) => {
           let user = result[0];
           const shop = result[1];
