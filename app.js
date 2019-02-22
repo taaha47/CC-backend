@@ -2,6 +2,8 @@ const express = require('express');
 const logger = require('morgan');
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
+const compression = require("compression");
+const helmet = require("helmet");
 require('dotenv').config();
 
 const indexRouter = require('./routes/index');
@@ -10,11 +12,18 @@ const shopsRouter = require("./routes/shops");
 
 const app = express();
 
-app.use(logger('dev'));
+app.use(helmet());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(compression());
+
+if (app.get("env") === "production") {
+    app.use(logger("combined"));
+} else {
+    app.use(logger("dev"));
+}
 
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
@@ -43,7 +52,7 @@ app.use(function(err, req, res, next) {
 });
 
 //mongoDb conf
-const dbUri = "mongodb://localhost:27017/coding-challenge";
+const dbUri = process.env.DB_HOST || process.env.DB_HOST_LOCAL;
 mongoose.connect(dbUri, {useNewUrlParser: true});
 mongoose.Promise = global.Promise;
 let db = mongoose.connection;
