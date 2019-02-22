@@ -52,7 +52,7 @@ app.use(function(err, req, res, next) {
 });
 
 //mongoDb conf
-const dbUri = process.env.DB_HOST || "mongodb://localhost:27017/coding-challenge";
+const dbUri = process.env.DB_HOST || process.env.DB_HOST_LOCAL;
 mongoose.connect(dbUri, {useNewUrlParser: true});
 mongoose.Promise = global.Promise;
 let db = mongoose.connection;
